@@ -10,19 +10,35 @@ import    android.view.View
 import    android.widget.TextView
 import    android.widget.Toast
 import    kotlinx.android.synthetic.main.activity_main.*
+import    okhttp3.*
 import    org.json.JSONObject
+import    java.io.IOException
 
 class MainActivity : AppCompatActivity() {
+    private val client = OkHttpClient()
+
+    fun run(url: String) {
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) =
+                println(response.body()?.string())
+        })
+    }
+
     fun responseApiSuccess(response: JSONObject) {
-        Log.i("request-success", response.toString());
+        Log.i("request-success", response.toString())
     }
 
     fun responseApiError(error: Exception) {
-        Log.e("request-error", error.toString());
+        Log.e("request-error", error.toString())
     }
 
     fun callAPI() {
-        var queryObject: JSONObject = JSONObject();
+        var queryObject: JSONObject = JSONObject()
 
         queryObject.put("barcode", "9780140157376");
         queryObject.put("formatted", "y");
@@ -37,7 +53,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callAPI()
+        //callAPI() volley test
+        run("https://api.barcodelookup.com/v3/products?barcode=9780140157376&formatted=y&key=sa8wcih9qpnb7q1mwhydisbe3hphfo") // okhttp3 test
 
         setContentView(R.layout.activity_main)
 
