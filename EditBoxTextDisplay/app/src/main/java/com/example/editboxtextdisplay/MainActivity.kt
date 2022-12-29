@@ -5,15 +5,40 @@ import    androidx.appcompat.app.AppCompatActivity
 import    android.os.Bundle
 import    android.text.Editable
 import    android.text.TextWatcher
+import    android.util.Log
 import    android.view.View
 import    android.widget.TextView
 import    android.widget.Toast
 import    kotlinx.android.synthetic.main.activity_main.*
+import    org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
+    fun responseApiSuccess(response: JSONObject) {
+        Log.i("request-success", response.toString());
+    }
+
+    fun responseApiError(error: Exception) {
+        Log.e("request-error", error.toString());
+    }
+
+    fun callAPI() {
+        var queryObject: JSONObject = JSONObject();
+
+        queryObject.put("barcode", "9780140157376");
+        queryObject.put("formatted", "y");
+        queryObject.put("key", "sa8wcih9qpnb7q1mwhydisbe3hphfo");
+
+        try {
+            RequestJSON.instance().setURL("https://api.barcodelookup.com/v3/products/").setMethod("GET").setQuery(queryObject).send(this, this::responseApiSuccess, this::responseApiError);
+        } catch (error: Exception) {
+            error.printStackTrace();
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        callAPI()
+
         setContentView(R.layout.activity_main)
 
         button.setOnClickListener {

@@ -1,5 +1,9 @@
 package com.example.editboxtextdisplay
 
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+
 class ApiData {
     companion object {
         const val count = 10
@@ -20,6 +24,6 @@ class ApiData {
 
     }
     interface Response {
-        fun data(data:Model.Result,status:Boolean)
+        fun data(data:UpcModel.Result,status:Boolean)
     }
 }
