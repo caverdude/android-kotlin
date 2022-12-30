@@ -10,6 +10,8 @@ import    android.view.View
 import    android.widget.TextView
 import    android.widget.Toast
 import    kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import    okhttp3.*
 import    org.json.JSONObject
 import    java.io.IOException
@@ -25,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) =
-                println(response.body()?.string())
+                println(response.body?.string())
         })
     }
 
@@ -45,7 +47,9 @@ class MainActivity : AppCompatActivity() {
         queryObject.put("key", "sa8wcih9qpnb7q1mwhydisbe3hphfo");
 
         try {
-            RequestJSON.instance().setURL("https://api.barcodelookup.com/v3/products/").setMethod("GET").setQuery(queryObject).send(this, this::responseApiSuccess, this::responseApiError);
+            RequestJSON.instance().setURL("https://api.barcodelookup.com/v3/products/")
+                .setMethod("GET").setQuery(queryObject)
+                .send(this, this::responseApiSuccess, this::responseApiError);
         } catch (error: Exception) {
             error.printStackTrace();
         }
@@ -54,7 +58,29 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //callAPI() volley test
-        run("https://api.barcodelookup.com/v3/products?barcode=9780140157376&formatted=y&key=sa8wcih9qpnb7q1mwhydisbe3hphfo") // okhttp3 test
+        //run("https://api.barcodelookup.com/v3/products?barcode=9780140157376&formatted=y&key=sa8wcih9qpnb7q1mwhydisbe3hphfo") // okhttp3 test
+
+        /* First Retrofit example from https://stackoverflow.com/questions/45219379/how-to-make-an-api-request-in-kotlin
+        ApiData.apiData(object : ApiData.Response {
+            override fun data(data: UpcModel.Result, status: Boolean) {
+                if (status) {
+                    val items: List<UpcModel.Children> = data.data.children
+                    Log.i("Redrofit-data", data.toString());
+                }
+            }
+
+        }) */
+        /*  from tutorial at  https://www.geeksforgeeks.org/retrofit-with-kotlin-coroutine-in-android/  */
+        val quotesApi = RetrofitHelper.getInstance().create(QuotesApi::class.java)
+        // launching a new coroutine
+        GlobalScope.launch {
+            val result = quotesApi.getQuotes()
+            if (result != null)
+            // Checking the results
+                Log.d("ayush: ", result.body().toString())
+        }
+
+        /*  edit text view continued */
 
         setContentView(R.layout.activity_main)
 
